@@ -5,12 +5,6 @@ import moment from 'moment';
 const fsol = accdb.open(`Provider=Microsoft.ACE.OLEDB.12.0;Data Source=${process.env.FSOLDB};Persist Security Info=False;`);// abrir conexion a factusol
 interface IClientExists { exists:Boolean, code:String|null, client:Object|null, resume:String|null } // interface de la respuesta de la existencia o no de clientes
 
-const clientExists = async ( CODCLI:String|Number ) => {
-    let clexists:Array<Object> = await fsol.query(`SELECT * FROM F_CLI WHERE CODCLI=${CODCLI}`);
-    let row:IClientExists;
-    return clexists.length ? { exists:true, code:null, client:clexists[0], resume:'toUpdate' }:{ exists:false, code:null, client:null, resume:'toCreate' }
-}
-
 export const SYNC = async(req:Request, resp:Response)=>{
     const lsClients:Array<any> = req.body.rows; // se obtiene la lista de clientes que llega desde el servidor remoto (CEDISS)
     console.log("Clientes recibidos:",lsClients.length); // arraives under the route such a json

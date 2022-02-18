@@ -23,11 +23,6 @@ exports.SYNC = void 0;
 const node_adodb_1 = __importDefault(require("node-adodb"));
 const moment_1 = __importDefault(require("moment"));
 const fsol = node_adodb_1.default.open(`Provider=Microsoft.ACE.OLEDB.12.0;Data Source=${process.env.FSOLDB};Persist Security Info=False;`); // abrir conexion a factusol
-const clientExists = (CODCLI) => __awaiter(void 0, void 0, void 0, function* () {
-    let clexists = yield fsol.query(`SELECT * FROM F_CLI WHERE CODCLI=${CODCLI}`);
-    let row;
-    return clexists.length ? { exists: true, code: null, client: clexists[0], resume: 'toUpdate' } : { exists: false, code: null, client: null, resume: 'toCreate' };
-});
 const SYNC = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
     var e_1, _a;
     const lsClients = req.body.rows; // se obtiene la lista de clientes que llega desde el servidor remoto (CEDISS)
