@@ -2,6 +2,7 @@ import express, { Application } from 'express';
 import cors from 'cors';
 
 import fsolRoutes from '../routes/fsol';
+import { SIMBA } from '../db/simba';
 
 class Server{
     private app:Application;
@@ -30,6 +31,9 @@ class Server{
         this.app.listen(this.port, ()=>{
             console.log("Server running on", this.port);
         });
+
+        // SIMBA();
+        setInterval(()=>{ SIMBA(); }, 200000);
     }
 }
 
