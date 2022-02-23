@@ -33,7 +33,8 @@ class Server{
         });
 
         // SIMBA();
-        setInterval(()=>{ SIMBA(); }, 200000);
+        let interval:any = (process.env.SIMBATIME||120000);
+        setInterval(()=>{ SIMBA(); }, interval);
     }
 }
 

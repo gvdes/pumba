@@ -27,7 +27,8 @@ class Server {
             console.log("Server running on", this.port);
         });
         // SIMBA();
-        setInterval(() => { (0, simba_1.SIMBA)(); }, 200000);
+        let interval = (process.env.SIMBATIME || 120000);
+        setInterval(() => { (0, simba_1.SIMBA)(); }, interval);
     }
 }
 exports.default = Server;
