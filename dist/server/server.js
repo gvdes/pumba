@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const fsol_1 = __importDefault(require("../routes/fsol"));
+const simba_1 = require("../db/simba");
 class Server {
     constructor() {
         this.paths = {
@@ -28,8 +29,8 @@ class Server {
             console.log("Server running on", this.port);
         });
         // SIMBA();
-        // let interval:any = (process.env.SIMBATIME||120000);
-        // setInterval(()=>{ SIMBA(); }, interval);
+        let interval = (process.env.SIMBATIME || 120000);
+        setInterval(() => { (0, simba_1.SIMBA)(); }, interval);
     }
 }
 exports.default = Server;
