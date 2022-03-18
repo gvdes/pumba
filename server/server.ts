@@ -34,9 +34,9 @@ class Server{
             console.log("Server running on", this.port);
         });
 
-        SIMBA();
-        // let interval:any = (process.env.SIMBATIME||120000);
-        // setInterval(()=>{ SIMBA(); }, interval);
+        // SIMBA();
+        let interval:any = (process.env.SIMBATIME||120000);
+        setInterval(()=>{ SIMBA(); }, interval);
     }
 }
 
