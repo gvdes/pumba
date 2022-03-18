@@ -12,12 +12,17 @@ export const SYNCPRODFAMS = async( req:Request, resp:Response )=>{
     console.log("Filas a insertar:",newrows.length);
 
     try {
+        console.log("Eliminando familiarizaciones...");
         for await (const row of newrows) {
             let dquery=`DELETE FROM F_EAN WHERE ARTEAN="${row.ARTEAN}";`;
+            await fsol.execute(dquery);
+        }
+
+        console.log("Familiarizando...");
+        for await (const row of newrows) {
             let iquery=`INSERT INTO F_EAN(ARTEAN,EANEAN) VALUES("${row.ARTEAN}","${row.EANEAN}");`;
 
-            const del = await fsol.execute(dquery);
-            const ins = await fsol.execute(iquery);
+            await fsol.execute(iquery);
             const res = `${row.ARTEAN} ==> Ok!!!`;
             console.log(res);
             resume.goals.push(res);

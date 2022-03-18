@@ -20,7 +20,9 @@ class Server{
     }
 
     middlewares(){
-        this.app.use( express.json() );
+        // this.app.use(express.json());
+        this.app.use(express.json({limit: '50mb'}));
+        this.app.use(express.urlencoded({limit: '50mb', extended: true }));
     }
 
     routes(){
@@ -32,9 +34,9 @@ class Server{
             console.log("Server running on", this.port);
         });
 
-        // SIMBA();
-        let interval:any = (process.env.SIMBATIME||120000);
-        setInterval(()=>{ SIMBA(); }, interval);
+        SIMBA();
+        // let interval:any = (process.env.SIMBATIME||120000);
+        // setInterval(()=>{ SIMBA(); }, interval);
     }
 }
 

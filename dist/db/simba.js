@@ -41,18 +41,20 @@ const SIMBA = () => __awaiter(void 0, void 0, void 0, function* () {
             GEN.ACTSTO AS GENSTOCK,
             EXH.ACTSTO AS EXHSTOCK,
             FDT.ACTSTO AS FDTSTOCK,
-            (GEN.ACTSTO + EXH.ACTSTO + FDT.ACTSTO) AS STOCK 
+            DES.ACTSTO AS DESSTOCK,
+            (GEN.ACTSTO + EXH.ACTSTO + FDT.ACTSTO + DES.ACTSTO) AS STOCK 
             FROM 
             (
                 (
-                    (F_STO INNER JOIN F_STO AS GEN ON GEN.ARTSTO = F_STO.ARTSTO)
-                    INNER JOIN F_STO AS EXH  ON EXH.ARTSTO = F_STO.ARTSTO
-                )
-                INNER JOIN F_STO AS FDT  ON FDT.ARTSTO = F_STO.ARTSTO
+                    ((F_STO INNER JOIN F_STO AS GEN ON GEN.ARTSTO = F_STO.ARTSTO)
+                    INNER JOIN F_STO AS EXH  ON EXH.ARTSTO = F_STO.ARTSTO)
+
+                    INNER JOIN F_STO AS FDT  ON FDT.ARTSTO = F_STO.ARTSTO)
+                    INNER JOIN F_STO AS DES  ON DES.ARTSTO = F_STO.ARTSTO
             )
             WHERE
-            (GEN.ALMSTO="GEN" AND EXH.ALMSTO="EXH" AND FDT.ALMSTO="FDT")
-            GROUP BY F_STO.ARTSTO, GEN.ACTSTO, EXH.ACTSTO, FDT.ACTSTO;
+            (GEN.ALMSTO="GEN" AND EXH.ALMSTO="EXH" AND FDT.ALMSTO="FDT" AND DES.ALMSTO="DES")
+            GROUP BY F_STO.ARTSTO, GEN.ACTSTO, EXH.ACTSTO, FDT.ACTSTO, DES.ACTSTO;
         `);
         if (rows.length) {
             console.log("Syncronizando ALMACENES...");
@@ -68,7 +70,8 @@ const SIMBA = () => __awaiter(void 0, void 0, void 0, function* () {
                         STO.stock="${row.STOCK}",
                         STO.exh="${row.EXHSTOCK}",
                         STO.gen="${row.GENSTOCK}",
-                        STO.fdt="${row.FDTSTOCK}"
+                        STO.fdt="${row.FDTSTOCK}",
+                        STO.des="${row.DESSTOCK}"
                     WHERE
                         P.code="${row.CODIGO}" AND W.id="${workpoint.id}";
                 `);
