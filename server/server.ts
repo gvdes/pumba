@@ -31,7 +31,7 @@ class Server{
 
     run(){
         this.app.listen(this.port, ()=>{
-            console.log("Server running on", this.port);
+            console.log("Pumba running's on", this.port);
         });
 
         // SIMBA();
