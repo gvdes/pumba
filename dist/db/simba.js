@@ -36,14 +36,15 @@ const SIMBA = () => __awaiter(void 0, void 0, void 0, function* () {
         const simbainit = `[${(0, moment_1.default)().format("YYYY/MM/DD h:mm:ss")}]: Simba ha iniciado...`;
         console.log(`\n${simbainit}`);
         let rset = [];
-        const rows = yield fsol.query(`
+        /**
+         *         const rows:Array<any> = await fsol.query(`
             SELECT F_STO.ARTSTO AS CODIGO,
             GEN.ACTSTO AS GENSTOCK,
             EXH.ACTSTO AS EXHSTOCK,
             FDT.ACTSTO AS FDTSTOCK,
             DES.ACTSTO AS DESSTOCK,
-            (GEN.ACTSTO + EXH.ACTSTO + FDT.ACTSTO + DES.ACTSTO) AS STOCK 
-            FROM 
+            (GEN.ACTSTO + EXH.ACTSTO + FDT.ACTSTO + DES.ACTSTO) AS STOCK
+            FROM
             (
                 (
                     ((F_STO INNER JOIN F_STO AS GEN ON GEN.ARTSTO = F_STO.ARTSTO)
@@ -55,6 +56,19 @@ const SIMBA = () => __awaiter(void 0, void 0, void 0, function* () {
             WHERE
             (GEN.ALMSTO="GEN" AND EXH.ALMSTO="EXH" AND FDT.ALMSTO="FDT" AND DES.ALMSTO="DES")
             GROUP BY F_STO.ARTSTO, GEN.ACTSTO, EXH.ACTSTO, FDT.ACTSTO, DES.ACTSTO;
+        `);
+         */
+        const rows = yield fsol.query(`
+            SELECT
+                F_ART.CODART AS CODIGO,
+                SUM(IIF(F_STO.ALMSTO = "GEN", F_STO.ACTSTO , 0)) AS GENSTOCK,
+                SUM(IIF(F_STO.ALMSTO = "DES", F_STO.ACTSTO , 0)) AS DESSTOCK,
+                SUM(IIF(F_STO.ALMSTO = "EXH", F_STO.ACTSTO , 0)) AS EXHSTOCK,
+                SUM(IIF(F_STO.ALMSTO = "FDT", F_STO.ACTSTO , 0)) AS FDTSTOCK,
+                SUM(IIF(F_STO.ALMSTO = "GEN", F_STO.ACTSTO , 0)  + IIF(F_STO.ALMSTO = "EXH", F_STO.ACTSTO , 0) ) AS STOCK
+            FROM F_ART
+                INNER JOIN F_STO ON F_STO.ARTSTO = F_ART.CODART
+            GROUP BY F_ART.CODART
         `);
         if (rows.length) {
             console.log("Syncronizando ALMACENES...");
