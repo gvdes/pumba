@@ -1,5 +1,6 @@
 import express, { Application } from 'express';
 import cors from 'cors';
+import moment from 'moment';
 
 import fsolRoutes from '../routes/fsol';
 import { SIMBA } from '../db/simba';
@@ -35,6 +36,8 @@ class Server{
         });
 
         // SIMBA();
+        let _t = moment().add(process.env.SIMBATIME,'ms');
+        console.log(`Simba iniciara a las ${_t.format("YYYY/MM/DD hh:mm:ss")}...`);
         let interval:any = (process.env.SIMBATIME||120000);
         setInterval(()=>{ SIMBA(); }, interval);
     }

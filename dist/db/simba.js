@@ -20,93 +20,80 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SIMBA = void 0;
+const fs = require('fs');
 const node_adodb_1 = __importDefault(require("node-adodb"));
 const moment_1 = __importDefault(require("moment"));
 const vizapi_1 = __importDefault(require("../db/vizapi"));
-const fsol = node_adodb_1.default.open(`Provider=Microsoft.ACE.OLEDB.12.0;Data Source=${process.env.FSOLDB};Persist Security Info=False;`);
 const SIMBA = () => __awaiter(void 0, void 0, void 0, function* () {
     var e_1, _a;
     const hourstart = (0, moment_1.default)('08:55:00', 'hh:mm:ss');
-    const hourend = (0, moment_1.default)('21:00:00', 'hh:mm:ss');
+    const hourend = (0, moment_1.default)('22:00:00', 'hh:mm:ss');
     const now = (0, moment_1.default)();
     const nday = (0, moment_1.default)().format("d");
-    if ((nday != 7) && (now.isBetween(hourstart, hourend))) {
-        const workpoint = JSON.parse((process.env.WORKPOINT || ""));
-        console.time('t1');
-        const simbainit = `[${(0, moment_1.default)().format("YYYY/MM/DD h:mm:ss")}]: Simba ha iniciado...`;
-        console.log(`\n${simbainit}`);
-        let rset = [];
-        /**
-         *         const rows:Array<any> = await fsol.query(`
-            SELECT F_STO.ARTSTO AS CODIGO,
-            GEN.ACTSTO AS GENSTOCK,
-            EXH.ACTSTO AS EXHSTOCK,
-            FDT.ACTSTO AS FDTSTOCK,
-            DES.ACTSTO AS DESSTOCK,
-            (GEN.ACTSTO + EXH.ACTSTO + FDT.ACTSTO + DES.ACTSTO) AS STOCK
-            FROM
-            (
-                (
-                    ((F_STO INNER JOIN F_STO AS GEN ON GEN.ARTSTO = F_STO.ARTSTO)
-                    INNER JOIN F_STO AS EXH  ON EXH.ARTSTO = F_STO.ARTSTO)
-
-                    INNER JOIN F_STO AS FDT  ON FDT.ARTSTO = F_STO.ARTSTO)
-                    INNER JOIN F_STO AS DES  ON DES.ARTSTO = F_STO.ARTSTO
-            )
-            WHERE
-            (GEN.ALMSTO="GEN" AND EXH.ALMSTO="EXH" AND FDT.ALMSTO="FDT" AND DES.ALMSTO="DES")
-            GROUP BY F_STO.ARTSTO, GEN.ACTSTO, EXH.ACTSTO, FDT.ACTSTO, DES.ACTSTO;
-        `);
-         */
-        const rows = yield fsol.query(`
-            SELECT
-                F_ART.CODART AS CODIGO,
-                SUM(IIF(F_STO.ALMSTO = "GEN", F_STO.ACTSTO , 0)) AS GENSTOCK,
-                SUM(IIF(F_STO.ALMSTO = "DES", F_STO.ACTSTO , 0)) AS DESSTOCK,
-                SUM(IIF(F_STO.ALMSTO = "EXH", F_STO.ACTSTO , 0)) AS EXHSTOCK,
-                SUM(IIF(F_STO.ALMSTO = "FDT", F_STO.ACTSTO , 0)) AS FDTSTOCK,
-                SUM(IIF(F_STO.ALMSTO = "GEN", F_STO.ACTSTO , 0)  + IIF(F_STO.ALMSTO = "EXH", F_STO.ACTSTO , 0) ) AS STOCK
-            FROM F_ART
-                INNER JOIN F_STO ON F_STO.ARTSTO = F_ART.CODART
-            GROUP BY F_ART.CODART
-        `);
-        if (rows.length) {
-            console.log("Syncronizando ALMACENES...");
-            console.log(rows.length, "filas");
-            try {
-                for (var rows_1 = __asyncValues(rows), rows_1_1; rows_1_1 = yield rows_1.next(), !rows_1_1.done;) {
-                    const row = rows_1_1.value;
-                    const [results] = yield vizapi_1.default.query(`
-                    UPDATE product_stock STO
-                        INNER JOIN products P ON P.id = STO._product
-                        INNER JOIN workpoints W ON W.id = STO._workpoint
-                    SET
-                        STO.stock="${row.STOCK}",
-                        STO.exh="${row.EXHSTOCK}",
-                        STO.gen="${row.GENSTOCK}",
-                        STO.fdt="${row.FDTSTOCK}",
-                        STO.des="${row.DESSTOCK}"
-                    WHERE
-                        P.code="${row.CODIGO}" AND W.id="${workpoint.id}";
-                `);
-                    if (results.changedRows > 0) {
-                        rset.push({ code: row.CODIGO });
+    // if( (nday!=7) && (now.isBetween(hourstart,hourend)) ){ // activar cuando no es temporada
+    if (now.isBetween(hourstart, hourend)) {
+        try {
+            const fsol = node_adodb_1.default.open(`Provider=Microsoft.ACE.OLEDB.12.0;Data Source=${process.env.FSOLDB};Persist Security Info=False;`);
+            const workpoint = JSON.parse((process.env.WORKPOINT || ""));
+            console.time('t1');
+            const simbainit = `[${(0, moment_1.default)().format("YYYY/MM/DD hh:mm:ss")}]: Simba ha iniciado...`;
+            console.log(`\n${simbainit}`);
+            let rset = [];
+            const rows = yield fsol.query(`
+                SELECT
+                    F_ART.CODART AS CODIGO,
+                    SUM(IIF(F_STO.ALMSTO = "GEN", F_STO.ACTSTO , 0)) AS GENSTOCK,
+                    SUM(IIF(F_STO.ALMSTO = "DES", F_STO.ACTSTO , 0)) AS DESSTOCK,
+                    SUM(IIF(F_STO.ALMSTO = "EXH", F_STO.ACTSTO , 0)) AS EXHSTOCK,
+                    SUM(IIF(F_STO.ALMSTO = "FDT", F_STO.ACTSTO , 0)) AS FDTSTOCK,
+                    SUM(IIF(F_STO.ALMSTO = "GEN", F_STO.ACTSTO , 0)  + IIF(F_STO.ALMSTO = "EXH", F_STO.ACTSTO , 0) ) AS STOCK
+                FROM F_ART
+                    INNER JOIN F_STO ON F_STO.ARTSTO = F_ART.CODART
+                GROUP BY F_ART.CODART
+            `);
+            if (rows.length) {
+                console.log("Syncronizando ALMACENES...");
+                console.log(rows.length, "filas");
+                try {
+                    for (var rows_1 = __asyncValues(rows), rows_1_1; rows_1_1 = yield rows_1.next(), !rows_1_1.done;) {
+                        const row = rows_1_1.value;
+                        const [results] = yield vizapi_1.default.query(`
+                        UPDATE product_stock STO
+                            INNER JOIN products P ON P.id = STO._product
+                            INNER JOIN workpoints W ON W.id = STO._workpoint
+                        SET
+                            STO.stock="${row.STOCK}",
+                            STO.exh="${row.EXHSTOCK}",
+                            STO.gen="${row.GENSTOCK}",
+                            STO.fdt="${row.FDTSTOCK}",
+                            STO.des="${row.DESSTOCK}"
+                        WHERE
+                            P.code="${row.CODIGO}" AND W.id="${workpoint.id}";
+                    `);
+                        if (results.changedRows > 0) {
+                            rset.push({ code: row.CODIGO });
+                        }
                     }
                 }
-            }
-            catch (e_1_1) { e_1 = { error: e_1_1 }; }
-            finally {
-                try {
-                    if (rows_1_1 && !rows_1_1.done && (_a = rows_1.return)) yield _a.call(rows_1);
+                catch (e_1_1) { e_1 = { error: e_1_1 }; }
+                finally {
+                    try {
+                        if (rows_1_1 && !rows_1_1.done && (_a = rows_1.return)) yield _a.call(rows_1);
+                    }
+                    finally { if (e_1) throw e_1.error; }
                 }
-                finally { if (e_1) throw e_1.error; }
             }
+            console.log("FILAS TOTALES:", rows.length);
+            console.log("UPDATEDS:", rset.length);
+            console.timeEnd('t1');
+            const _tend = (0, moment_1.default)();
+            console.log(`[${_tend.format("hh:mm:ss")}]: Simba ha finalizado...`);
+            console.log(`Siguiente sincronizacion: ${_tend.add(process.env.SIMBATIME, 'ms').format("hh:mm:ss")}`);
         }
-        console.log("FILAS TOTALES:", rows.length);
-        console.log("UPDATEDS:", rset.length);
-        const simbaends = `[${(0, moment_1.default)().format("YYYY/MM/DD h:mm:ss")}]: Simba ha finalizado.`;
-        console.timeEnd('t1');
-        console.log(`${simbaends}\n`);
+        catch (error) {
+            console.error(error);
+            console.log("El programa tuvo un error de jecucion, esperando siguiente vuelta...");
+        }
     }
 });
 exports.SIMBA = SIMBA;

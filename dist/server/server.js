@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const moment_1 = __importDefault(require("moment"));
 const fsol_1 = __importDefault(require("../routes/fsol"));
 const simba_1 = require("../db/simba");
 class Server {
@@ -29,6 +30,8 @@ class Server {
             console.log("Pumba running's on", this.port);
         });
         // SIMBA();
+        let _t = (0, moment_1.default)().add(process.env.SIMBATIME, 'ms');
+        console.log(`Simba iniciara a las ${_t.format("YYYY/MM/DD hh:mm:ss")}...`);
         let interval = (process.env.SIMBATIME || 120000);
         setInterval(() => { (0, simba_1.SIMBA)(); }, interval);
     }
