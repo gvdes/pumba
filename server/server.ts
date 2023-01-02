@@ -35,11 +35,11 @@ class Server{
             console.log("Pumba running's on", this.port);
         });
 
-        // SIMBA();
-        let _t = moment().add(process.env.SIMBATIME,'ms');
-        console.log(`Simba iniciara a las ${_t.format("YYYY/MM/DD hh:mm:ss")}...`);
-        let interval:any = (process.env.SIMBATIME||120000);
-        setInterval(()=>{ SIMBA(); }, interval);
+        SIMBA();
+        // let _t = moment().add(process.env.SIMBATIME,'ms');
+        // console.log(`Simba iniciara a las ${_t.format("YYYY/MM/DD hh:mm:ss")}...`);
+        // let interval:any = (process.env.SIMBATIME||120000);
+        // setInterval(()=>{ SIMBA(); }, interval);
     }
 }
 

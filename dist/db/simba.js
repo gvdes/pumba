@@ -30,8 +30,9 @@ const SIMBA = () => __awaiter(void 0, void 0, void 0, function* () {
     const hourend = (0, moment_1.default)('22:00:00', 'hh:mm:ss');
     const now = (0, moment_1.default)();
     const nday = (0, moment_1.default)().format("d");
-    // if( (nday!=7) && (now.isBetween(hourstart,hourend)) ){ // activar cuando no es temporada
-    if (now.isBetween(hourstart, hourend)) {
+    if ((nday != 7) && (now.isBetween(hourstart, hourend))) { // activar cuando no es temporada
+        // if( now.isBetween(hourstart,hourend) ){
+        console.log("Simba a iniciado...");
         try {
             const fsol = node_adodb_1.default.open(`Provider=Microsoft.ACE.OLEDB.12.0;Data Source=${process.env.FSOLDB};Persist Security Info=False;`);
             const workpoint = JSON.parse((process.env.WORKPOINT || ""));
@@ -87,13 +88,18 @@ const SIMBA = () => __awaiter(void 0, void 0, void 0, function* () {
             console.log("UPDATEDS:", rset.length);
             console.timeEnd('t1');
             const _tend = (0, moment_1.default)();
-            console.log(`[${_tend.format("hh:mm:ss")}]: Simba ha finalizado...`);
-            console.log(`Siguiente sincronizacion: ${_tend.add(process.env.SIMBATIME, 'ms').format("hh:mm:ss")}`);
+            console.log(`[${_tend.format("hh:mm:ss")}]: Simba ha finalizado, siguiente vuelta en 10 segundos...`);
+            setTimeout(() => { (0, exports.SIMBA)(); }, 10000);
         }
         catch (error) {
+            console.timeEnd('t1');
             console.error(error);
-            console.log("El programa tuvo un error de jecucion, esperando siguiente vuelta...");
+            console.log("Simba tuvo un error de jecucion, nuevo intento en 10 segundos...");
+            setTimeout(() => { (0, exports.SIMBA)(); }, 10000);
         }
+    }
+    else {
+        setTimeout(() => { (0, exports.SIMBA)(); }, 300000);
     }
 });
 exports.SIMBA = SIMBA;
