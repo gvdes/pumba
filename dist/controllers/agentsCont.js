@@ -25,7 +25,7 @@ const moment_1 = __importDefault(require("moment"));
 const fsol = node_adodb_1.default.open(`Provider=Microsoft.ACE.OLEDB.12.0;Data Source=${process.env.FSOLDB};Persist Security Info=False;`); // abrir conexion a factusol
 // interface IClientExists { exists:Boolean, code:String|null, client:Object|null, resume:String|null } // interface de la respuesta de la existencia o no de clientes
 const SYNCAGENTS = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
-    var e_1, _a, e_2, _b;
+    var _a, e_1, _b, _c, _d, e_2, _e, _f;
     const lsAgentes = req.body.rset_agentes; // se obtiene la lista de clientes que llega desde el servidor remoto (CEDISS)
     const lsDependientes = req.body.rset_dependientes; // se obtiene la lista de clientes que llega desde el servidor remoto (CEDISS)
     const destino = JSON.parse(process.env.WORKPOINT || "uknown");
@@ -33,8 +33,10 @@ const SYNCAGENTS = (req, resp) => __awaiter(void 0, void 0, void 0, function* ()
     if (lsAgentes.length || lsDependientes.length) {
         console.log("Sincronizando Agentes/Dependientes...", lsAgentes.length);
         try {
-            for (var lsAgentes_1 = __asyncValues(lsAgentes), lsAgentes_1_1; lsAgentes_1_1 = yield lsAgentes_1.next(), !lsAgentes_1_1.done;) {
-                const agent = lsAgentes_1_1.value;
+            for (var _g = true, lsAgentes_1 = __asyncValues(lsAgentes), lsAgentes_1_1; lsAgentes_1_1 = yield lsAgentes_1.next(), _a = lsAgentes_1_1.done, !_a; _g = true) {
+                _c = lsAgentes_1_1.value;
+                _g = false;
+                const agent = _c;
                 agent.FALAGE = (0, moment_1.default)(agent.FALAGE).format("YYYY/MM/DD");
                 agent.FFOAGE = (0, moment_1.default)(agent.FFOAGE).format("YYYY/MM/DD");
                 agent.FCCAGE = (0, moment_1.default)(agent.FCCAGE).format("YYYY/MM/DD");
@@ -61,7 +63,7 @@ const SYNCAGENTS = (req, resp) => __awaiter(void 0, void 0, void 0, function* ()
         catch (e_1_1) { e_1 = { error: e_1_1 }; }
         finally {
             try {
-                if (lsAgentes_1_1 && !lsAgentes_1_1.done && (_a = lsAgentes_1.return)) yield _a.call(lsAgentes_1);
+                if (!_g && !_a && (_b = lsAgentes_1.return)) yield _b.call(lsAgentes_1);
             }
             finally { if (e_1) throw e_1.error; }
         }
@@ -69,8 +71,10 @@ const SYNCAGENTS = (req, resp) => __awaiter(void 0, void 0, void 0, function* ()
     if (lsDependientes.length) {
         console.log("Sincronizando Dependientes...", lsDependientes.length);
         try {
-            for (var lsDependientes_1 = __asyncValues(lsDependientes), lsDependientes_1_1; lsDependientes_1_1 = yield lsDependientes_1.next(), !lsDependientes_1_1.done;) {
-                const dep = lsDependientes_1_1.value;
+            for (var _h = true, lsDependientes_1 = __asyncValues(lsDependientes), lsDependientes_1_1; lsDependientes_1_1 = yield lsDependientes_1.next(), _d = lsDependientes_1_1.done, !_d; _h = true) {
+                _f = lsDependientes_1_1.value;
+                _h = false;
+                const dep = _f;
                 let clResume = `${dep.CODDEP}::${dep.NOMDEP}::${dep.CLADEP}`;
                 let depvalues = JSON.stringify(Object.values(dep));
                 let dep_rows = depvalues.substring(1, depvalues.length - 1);
@@ -89,7 +93,7 @@ const SYNCAGENTS = (req, resp) => __awaiter(void 0, void 0, void 0, function* ()
         catch (e_2_1) { e_2 = { error: e_2_1 }; }
         finally {
             try {
-                if (lsDependientes_1_1 && !lsDependientes_1_1.done && (_b = lsDependientes_1.return)) yield _b.call(lsDependientes_1);
+                if (!_h && !_d && (_e = lsDependientes_1.return)) yield _e.call(lsDependientes_1);
             }
             finally { if (e_2) throw e_2.error; }
         }

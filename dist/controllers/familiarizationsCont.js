@@ -23,7 +23,7 @@ exports.SYNCPRODFAMS = void 0;
 const node_adodb_1 = __importDefault(require("node-adodb"));
 const fsol = node_adodb_1.default.open(`Provider=Microsoft.ACE.OLEDB.12.0;Data Source=${process.env.FSOLDB};Persist Security Info=False;`); // abrir conexion a factusol
 const SYNCPRODFAMS = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
-    var e_1, _a, e_2, _b;
+    var _a, e_1, _b, _c, _d, e_2, _e, _f;
     console.time("timeexe");
     const newrows = req.body.rows; // se obtiene la lista de clientes que llega desde el servidor remoto (CEDISS)
     console.log("vamo a familiarizar!!");
@@ -32,8 +32,10 @@ const SYNCPRODFAMS = (req, resp) => __awaiter(void 0, void 0, void 0, function* 
     try {
         console.log("Eliminando familiarizaciones...");
         try {
-            for (var newrows_1 = __asyncValues(newrows), newrows_1_1; newrows_1_1 = yield newrows_1.next(), !newrows_1_1.done;) {
-                const row = newrows_1_1.value;
+            for (var _g = true, newrows_1 = __asyncValues(newrows), newrows_1_1; newrows_1_1 = yield newrows_1.next(), _a = newrows_1_1.done, !_a; _g = true) {
+                _c = newrows_1_1.value;
+                _g = false;
+                const row = _c;
                 let dquery = `DELETE FROM F_EAN WHERE ARTEAN="${row.ARTEAN}";`;
                 yield fsol.execute(dquery);
             }
@@ -41,14 +43,16 @@ const SYNCPRODFAMS = (req, resp) => __awaiter(void 0, void 0, void 0, function* 
         catch (e_1_1) { e_1 = { error: e_1_1 }; }
         finally {
             try {
-                if (newrows_1_1 && !newrows_1_1.done && (_a = newrows_1.return)) yield _a.call(newrows_1);
+                if (!_g && !_a && (_b = newrows_1.return)) yield _b.call(newrows_1);
             }
             finally { if (e_1) throw e_1.error; }
         }
         console.log("Familiarizando...");
         try {
-            for (var newrows_2 = __asyncValues(newrows), newrows_2_1; newrows_2_1 = yield newrows_2.next(), !newrows_2_1.done;) {
-                const row = newrows_2_1.value;
+            for (var _h = true, newrows_2 = __asyncValues(newrows), newrows_2_1; newrows_2_1 = yield newrows_2.next(), _d = newrows_2_1.done, !_d; _h = true) {
+                _f = newrows_2_1.value;
+                _h = false;
+                const row = _f;
                 let iquery = `INSERT INTO F_EAN(ARTEAN,EANEAN) VALUES("${row.ARTEAN}","${row.EANEAN}");`;
                 yield fsol.execute(iquery);
                 const res = `${row.ARTEAN} ==> Ok!!!`;
@@ -59,7 +63,7 @@ const SYNCPRODFAMS = (req, resp) => __awaiter(void 0, void 0, void 0, function* 
         catch (e_2_1) { e_2 = { error: e_2_1 }; }
         finally {
             try {
-                if (newrows_2_1 && !newrows_2_1.done && (_b = newrows_2.return)) yield _b.call(newrows_2);
+                if (!_h && !_d && (_e = newrows_2.return)) yield _e.call(newrows_2);
             }
             finally { if (e_2) throw e_2.error; }
         }

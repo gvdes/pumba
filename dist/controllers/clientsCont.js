@@ -24,14 +24,16 @@ const node_adodb_1 = __importDefault(require("node-adodb"));
 const moment_1 = __importDefault(require("moment"));
 const fsol = node_adodb_1.default.open(`Provider=Microsoft.ACE.OLEDB.12.0;Data Source=${process.env.FSOLDB};Persist Security Info=False;`); // abrir conexion a factusol
 const SYNC = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
-    var e_1, _a;
+    var _a, e_1, _b, _c;
     const lsClients = req.body.rows; // se obtiene la lista de clientes que llega desde el servidor remoto (CEDISS)
     console.log("Clientes recibidos:", lsClients.length); // arraives under the route such a json
     const destino = JSON.parse(process.env.WORKPOINT || "uknown");
     let resume = { destino, actualizados: [], creados: [], erroneos: [] };
     try {
-        for (var lsClients_1 = __asyncValues(lsClients), lsClients_1_1; lsClients_1_1 = yield lsClients_1.next(), !lsClients_1_1.done;) {
-            const client = lsClients_1_1.value;
+        for (var _d = true, lsClients_1 = __asyncValues(lsClients), lsClients_1_1; lsClients_1_1 = yield lsClients_1.next(), _a = lsClients_1_1.done, !_a; _d = true) {
+            _c = lsClients_1_1.value;
+            _d = false;
+            const client = _c;
             console.log("Buscando: ", client.CODCLI);
             // FORMATEAR LAS FECHAS para 
             let clResume = `${client.CODCLI} ${client.NOFCLI}`;
@@ -74,7 +76,7 @@ const SYNC = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
     catch (e_1_1) { e_1 = { error: e_1_1 }; }
     finally {
         try {
-            if (lsClients_1_1 && !lsClients_1_1.done && (_a = lsClients_1.return)) yield _a.call(lsClients_1);
+            if (!_d && !_a && (_b = lsClients_1.return)) yield _b.call(lsClients_1);
         }
         finally { if (e_1) throw e_1.error; }
     }

@@ -23,13 +23,15 @@ exports.SYNCPRODUCTS = void 0;
 const node_adodb_1 = __importDefault(require("node-adodb"));
 const fsol = node_adodb_1.default.open(`Provider=Microsoft.ACE.OLEDB.12.0;Data Source=${process.env.FSOLDB};Persist Security Info=False;`); // abrir conexion a factusol
 const SYNCPRODUCTS = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
-    var e_1, _a;
+    var _a, e_1, _b, _c;
     const body = req.body;
     const products = body.rsetprods;
     const prices = body.rsetprices;
     try {
-        for (var products_1 = __asyncValues(products), products_1_1; products_1_1 = yield products_1.next(), !products_1_1.done;) {
-            const product = products_1_1.value;
+        for (var _d = true, products_1 = __asyncValues(products), products_1_1; products_1_1 = yield products_1.next(), _a = products_1_1.done, !_a; _d = true) {
+            _c = products_1_1.value;
+            _d = false;
+            const product = _c;
             console.log(product.CODART);
             const qexists = yield fsol.query(`SELECT COUNT(*) as EXISTE FROM F_ART WHERE CODART="${product.CODART}";`);
             console.log(qexists);
@@ -38,7 +40,7 @@ const SYNCPRODUCTS = (req, resp) => __awaiter(void 0, void 0, void 0, function* 
     catch (e_1_1) { e_1 = { error: e_1_1 }; }
     finally {
         try {
-            if (products_1_1 && !products_1_1.done && (_a = products_1.return)) yield _a.call(products_1);
+            if (!_d && !_a && (_b = products_1.return)) yield _b.call(products_1);
         }
         finally { if (e_1) throw e_1.error; }
     }
