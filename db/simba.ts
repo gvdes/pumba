@@ -27,6 +27,7 @@ export const SIMBA = async () => {
                     SUM(IIF(F_STO.ALMSTO = "DES", F_STO.ACTSTO , 0)) AS des,
                     SUM(IIF(F_STO.ALMSTO = "EXH", F_STO.ACTSTO , 0)) AS exh,
                     SUM(IIF(F_STO.ALMSTO = "FDT", F_STO.ACTSTO , 0)) AS fdt,
+                    SUM(IIF(F_STO.ALMSTO = "EMP", F_STO.ACTSTO , 0)) AS emp,
                     SUM(IIF(F_STO.ALMSTO = "GEN", F_STO.ACTSTO , 0)  + IIF(F_STO.ALMSTO = "EXH", F_STO.ACTSTO , 0) ) AS stock
                 FROM F_ART
                     INNER JOIN F_STO ON F_STO.ARTSTO = F_ART.CODART
@@ -40,6 +41,7 @@ export const SIMBA = async () => {
                 PS.des,
                 PS.exh,
                 PS.fdt,
+                PS.emp,
                 PS.stock
                 FROM products P
                 INNER JOIN product_stock PS ON PS._product = P.id
@@ -63,6 +65,7 @@ export const SIMBA = async () => {
                 normalize(item.des) !== normalize(dbItem.des) ||
                 normalize(item.exh) !== normalize(dbItem.exh) ||
                 normalize(item.fdt) !== normalize(dbItem.fdt) ||
+                normalize(item.emp) !== normalize(dbItem.emp) ||
                 normalize(item.stock) !== normalize(dbItem.stock);
 
                 if (diff) {
@@ -72,6 +75,7 @@ export const SIMBA = async () => {
                         des: item.des,
                         exh: item.exh,
                         fdt: item.fdt,
+                        emp: item.emp,
                         stock: item.stock
                     });
                 }
@@ -94,6 +98,7 @@ export const SIMBA = async () => {
                             PS.des = ${item.des},
                             PS.exh = ${item.exh},
                             PS.fdt = ${item.fdt},
+                            PS.emp = ${item.emp},
                             PS.stock = ${item.stock}
                         WHERE 
                             P.code = '${item.code}'
